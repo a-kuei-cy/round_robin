@@ -3,716 +3,585 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>循環賽抽籤系統</title>
+<title>循環賽管理系統</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Oswald:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg: #0a0e1a;
-  --surface: #111827;
-  --surface2: #1a2235;
-  --border: #1e2d45;
-  --accent: #f59e0b;
-  --accent2: #ef4444;
-  --accent3: #10b981;
-  --text: #e2e8f0;
-  --text2: #94a3b8;
-  --gold: #fbbf24;
-  --silver: #94a3b8;
-  --bronze: #d97706;
+:root{
+  --bg:#0b0f1a;--surface:#111827;--s2:#1a2235;--s3:#212d42;
+  --border:#1e2d45;--accent:#f59e0b;--red:#ef4444;--green:#10b981;--blue:#3b82f6;
+  --text:#e2e8f0;--t2:#94a3b8;--t3:#64748b;
+  --gold:#fbbf24;--silver:#94a3b8;--bronze:#d97706;
+  --r:10px;
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'Noto Sans TC', sans-serif;
-  min-height: 100vh;
-}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-serif;min-height:100vh}
 
 /* ── HEADER ── */
-.header {
-  background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
-  border-bottom: 2px solid var(--accent);
-  padding: 20px 32px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: sticky;
-  top: 0;
-  z-index: 100;
+.hdr{
+  background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 100%);
+  border-bottom:2px solid var(--accent);
+  padding:14px 24px;display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:100;gap:10px;flex-wrap:wrap;
 }
-.header h1 {
-  font-family: 'Oswald', sans-serif;
-  font-size: 1.8rem;
-  letter-spacing: 2px;
-  color: var(--accent);
-  text-shadow: 0 0 20px rgba(245,158,11,.4);
-}
-.header-sub { font-size: .8rem; color: var(--text2); margin-top: 2px; }
-.admin-btn {
-  background: transparent;
-  border: 1px solid var(--border);
-  color: var(--text2);
-  padding: 8px 16px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: .85rem;
-  transition: all .2s;
-  font-family: 'Noto Sans TC', sans-serif;
-}
-.admin-btn:hover { border-color: var(--accent); color: var(--accent); }
-.admin-btn.active { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 700; }
+.logo{font-family:'Oswald',sans-serif;font-size:1.5rem;letter-spacing:2px;
+  color:var(--accent);text-shadow:0 0 24px rgba(245,158,11,.4);white-space:nowrap}
+.hdr-mid{display:flex;align-items:center;gap:10px;flex:1;max-width:360px}
+.ev-sel{background:var(--s2);border:1px solid var(--border);color:var(--text);
+  padding:7px 11px;border-radius:8px;font-family:'Noto Sans TC',sans-serif;font-size:.83rem;
+  flex:1;cursor:pointer;outline:none}
+.ev-sel:focus{border-color:var(--accent)}
+.hdr-right{display:flex;align-items:center;gap:8px}
+.spill{font-size:.72rem;color:var(--t2);display:flex;align-items:center;gap:5px}
+.sd{width:7px;height:7px;border-radius:50%;background:var(--t3);flex-shrink:0}
+.sd.ok{background:var(--green);box-shadow:0 0 6px var(--green)}
+.sd.busy{background:var(--accent);animation:pulse 1.2s infinite}
+.sd.err{background:var(--red)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 
 /* ── TABS ── */
-.tabs {
-  display: flex;
-  gap: 0;
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  padding: 0 32px;
-  overflow-x: auto;
-}
-.tab-btn {
-  padding: 14px 24px;
-  background: none;
-  border: none;
-  color: var(--text2);
-  cursor: pointer;
-  font-family: 'Noto Sans TC', sans-serif;
-  font-size: .9rem;
-  font-weight: 500;
-  border-bottom: 3px solid transparent;
-  white-space: nowrap;
-  transition: all .2s;
-}
-.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
-.tab-btn:hover:not(.active) { color: var(--text); }
+.tabs{background:var(--surface);border-bottom:1px solid var(--border);
+  display:flex;padding:0 24px;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tb{padding:12px 18px;background:none;border:none;color:var(--t2);cursor:pointer;
+  font-family:'Noto Sans TC',sans-serif;font-size:.85rem;font-weight:500;
+  border-bottom:3px solid transparent;white-space:nowrap;transition:all .2s}
+.tb.on{color:var(--accent);border-bottom-color:var(--accent)}
+.tb:hover:not(.on){color:var(--text)}
 
-/* ── MAIN ── */
-.main { max-width: 1100px; margin: 0 auto; padding: 32px 24px; }
-.panel { display: none; }
-.panel.active { display: block; }
+/* ── LAYOUT ── */
+.main{max-width:1100px;margin:0 auto;padding:24px 18px}
+.panel{display:none}.panel.on{display:block}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:640px){.g2{grid-template-columns:1fr}}
 
-/* ── CARDS ── */
-.card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 24px;
-  margin-bottom: 20px;
-}
-.card-title {
-  font-family: 'Oswald', sans-serif;
-  font-size: 1.1rem;
-  letter-spacing: 1px;
-  color: var(--accent);
-  margin-bottom: 18px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.card-title::before {
-  content: '';
-  display: block;
-  width: 4px;
-  height: 18px;
-  background: var(--accent);
-  border-radius: 2px;
-}
+/* ── CARD ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
+  padding:20px;margin-bottom:16px}
+.ch{font-family:'Oswald',sans-serif;font-size:1rem;letter-spacing:1px;
+  color:var(--accent);margin-bottom:14px;display:flex;align-items:center;
+  justify-content:space-between;gap:8px}
+.ch-l{display:flex;align-items:center;gap:8px}
+.ch-l::before{content:'';display:block;width:4px;height:15px;
+  background:var(--accent);border-radius:2px}
 
 /* ── FORM ── */
-.form-row { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; }
-input[type="text"], input[type="password"], select, textarea {
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  color: var(--text);
-  padding: 10px 14px;
-  border-radius: 8px;
-  font-family: 'Noto Sans TC', sans-serif;
-  font-size: .9rem;
-  transition: border-color .2s;
-  outline: none;
-}
-input[type="text"]:focus, input[type="password"]:focus, select:focus, textarea:focus {
-  border-color: var(--accent);
-}
-.team-input-wrap { flex: 1; position: relative; }
-.team-badge {
-  position: absolute;
-  left: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: var(--accent);
-  color: #000;
-  font-size: .7rem;
-  font-weight: 900;
-  font-family: 'Oswald', sans-serif;
-  padding: 2px 7px;
-  border-radius: 4px;
-  min-width: 26px;
-  text-align: center;
-}
-.team-input { width: 100%; padding-left: 48px !important; }
-.remove-btn {
-  background: none;
-  border: 1px solid #374151;
-  color: #6b7280;
-  width: 36px;
-  height: 36px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 1.1rem;
-  transition: all .2s;
-  flex-shrink: 0;
-}
-.remove-btn:hover { border-color: var(--accent2); color: var(--accent2); }
-.btn {
-  padding: 10px 20px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  font-family: 'Noto Sans TC', sans-serif;
-  font-weight: 700;
-  font-size: .9rem;
-  transition: all .2s;
-}
-.btn-primary { background: var(--accent); color: #000; }
-.btn-primary:hover { background: #d97706; transform: translateY(-1px); }
-.btn-secondary { background: var(--surface2); border: 1px solid var(--border); color: var(--text); }
-.btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
-.btn-danger { background: var(--accent2); color: #fff; }
-.btn-danger:hover { background: #dc2626; }
-.btn-success { background: var(--accent3); color: #fff; }
-.btn-success:hover { background: #059669; }
-.btn-sm { padding: 6px 14px; font-size: .8rem; }
-.btn-group { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
-.info-box {
-  background: rgba(245,158,11,.08);
-  border: 1px solid rgba(245,158,11,.25);
-  border-radius: 8px;
-  padding: 12px 16px;
-  font-size: .85rem;
-  color: var(--text2);
-  margin-bottom: 16px;
-}
+label{font-size:.78rem;color:var(--t2);display:block;margin-bottom:4px}
+input[type=text],input[type=password],input[type=number],select,textarea{
+  background:var(--s2);border:1px solid var(--border);color:var(--text);
+  padding:8px 12px;border-radius:8px;font-family:'Noto Sans TC',sans-serif;
+  font-size:.86rem;transition:border-color .2s;outline:none;width:100%}
+input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+.row{display:flex;gap:8px;margin-bottom:10px;align-items:flex-end}
+.f1{flex:1}.f2{flex:2}
 
-/* ── DRAW ANIMATION ── */
-#draw-stage {
-  display: none;
-  text-align: center;
-  padding: 48px 24px;
-}
-.draw-ball-container {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 16px;
-  margin: 32px 0;
-  min-height: 80px;
-}
-.draw-ball {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: 'Oswald', sans-serif;
-  font-size: 1.3rem;
-  font-weight: 700;
-  color: #000;
-  animation: ballIn .4s ease-out both;
-  position: relative;
-  box-shadow: 0 4px 20px rgba(0,0,0,.4);
-}
-.draw-ball::after {
-  content: attr(data-num);
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 1.4rem;
-}
-@keyframes ballIn {
-  from { transform: scale(0) rotate(-180deg); opacity: 0; }
-  to { transform: scale(1) rotate(0); opacity: 1; }
-}
-.ball-colors {
-  --c0: #f59e0b; --c1: #ef4444; --c2: #3b82f6; --c3: #10b981;
-  --c4: #8b5cf6; --c5: #ec4899; --c6: #06b6d4; --c7: #84cc16;
-  --c8: #f97316; --c9: #a855f7; --c10: #14b8a6; --c11: #f43f5e;
-  --c12: #6366f1; --c13: #22c55e; --c14: #eab308; --c15: #64748b;
-}
-.draw-title {
-  font-family: 'Oswald', sans-serif;
-  font-size: 2rem;
-  letter-spacing: 3px;
-  color: var(--accent);
-  text-shadow: 0 0 30px rgba(245,158,11,.5);
-}
-.draw-subtitle { font-size: .9rem; color: var(--text2); margin-top: 6px; }
+/* ── BUTTONS ── */
+.btn{padding:8px 16px;border-radius:8px;border:none;cursor:pointer;
+  font-family:'Noto Sans TC',sans-serif;font-weight:700;font-size:.85rem;
+  transition:all .18s;display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.bp{background:var(--accent);color:#000}.bp:hover{background:#d97706;transform:translateY(-1px)}
+.bs{background:var(--s2);border:1px solid var(--border);color:var(--text)}
+.bs:hover{border-color:var(--accent);color:var(--accent)}
+.bd{background:var(--red);color:#fff}.bd:hover{background:#dc2626}
+.bg{background:var(--green);color:#fff}.bg:hover{background:#059669}
+.bb{background:var(--blue);color:#fff}.bb:hover{background:#2563eb}
+.bsm{padding:5px 11px;font-size:.78rem}
+.bxs{padding:3px 8px;font-size:.72rem}
+.bgrp{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
 
-/* ── SCHEDULE TABLE ── */
-.schedule-grid {
-  display: grid;
-  gap: 10px;
-}
-.match-card {
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 14px 18px;
-  display: grid;
-  grid-template-columns: 1fr auto 1fr auto;
-  align-items: center;
-  gap: 12px;
-  transition: border-color .2s;
-}
-.match-card:hover { border-color: rgba(245,158,11,.3); }
-.match-card.finished { border-left: 3px solid var(--accent3); }
-.match-no {
-  grid-column: 1 / -1;
-  font-size: .75rem;
-  color: var(--text2);
-  margin-bottom: 4px;
-}
-.team-label {
-  font-weight: 700;
-  font-size: .95rem;
-}
-.team-label.home { text-align: right; }
-.vs-badge {
-  font-family: 'Oswald', sans-serif;
-  font-size: 1.1rem;
-  color: var(--accent);
-  text-align: center;
-  font-weight: 700;
-}
-.score-inputs { display: flex; align-items: center; gap: 6px; }
-.score-input {
-  width: 52px !important;
-  text-align: center;
-  padding: 6px 8px !important;
-}
-.score-sep { color: var(--text2); font-weight: 700; }
-.save-score-btn {
-  padding: 6px 12px;
-  font-size: .8rem;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
-  font-family: 'Noto Sans TC', sans-serif;
-  font-weight: 700;
-  background: var(--accent3);
-  color: #fff;
-  transition: all .2s;
-}
-.save-score-btn:hover { background: #059669; }
-.round-header {
-  font-family: 'Oswald', sans-serif;
-  font-size: .95rem;
-  letter-spacing: 1px;
-  color: var(--text2);
-  padding: 12px 0 4px;
-  border-top: 1px solid var(--border);
-  margin-top: 8px;
-}
+/* ── INFO ── */
+.info{background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.18);
+  border-radius:8px;padding:10px 14px;font-size:.82rem;color:var(--t2);margin-bottom:12px}
+.al{padding:8px 13px;border-radius:8px;font-size:.82rem;margin-top:8px}
+.al.ok{background:rgba(16,185,129,.1);color:#6ee7b7;border:1px solid rgba(16,185,129,.2)}
+.al.err{background:rgba(239,68,68,.1);color:#fca5a5;border:1px solid rgba(239,68,68,.2)}
+.al.inf{background:rgba(59,130,246,.1);color:#93c5fd;border:1px solid rgba(59,130,246,.2)}
+
+/* ── TEAM INPUT ── */
+.tr{display:flex;gap:8px;align-items:center;margin-bottom:7px}
+.tbadge{background:var(--accent);color:#000;font-family:'Oswald',sans-serif;font-weight:700;
+  font-size:.72rem;padding:2px 7px;border-radius:4px;min-width:24px;text-align:center;flex-shrink:0}
+.tdel{background:none;border:1px solid #374151;color:#6b7280;width:30px;height:30px;
+  border-radius:6px;cursor:pointer;font-size:.95rem;transition:all .18s;flex-shrink:0}
+.tdel:hover{border-color:var(--red);color:var(--red)}
+
+/* ── DRAW ── */
+#drawStage{display:none;text-align:center;padding:36px 16px}
+.dtitle{font-family:'Oswald',sans-serif;font-size:1.9rem;letter-spacing:3px;
+  color:var(--accent);text-shadow:0 0 28px rgba(245,158,11,.45)}
+.balls{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin:24px 0;min-height:66px}
+.ball{width:58px;height:58px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-family:'Oswald',sans-serif;font-size:1.35rem;font-weight:700;color:#000;
+  animation:ballIn .38s ease-out both;box-shadow:0 4px 16px rgba(0,0,0,.4)}
+@keyframes ballIn{from{transform:scale(0) rotate(-180deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+
+/* ── SCHEDULE ── */
+.mc{background:var(--s2);border:1px solid var(--border);border-radius:9px;
+  padding:12px 15px;margin-bottom:7px;transition:border-color .18s}
+.mc:hover{border-color:rgba(245,158,11,.22)}
+.mc.done{border-left:3px solid var(--green)}
+.mno{font-size:.7rem;color:var(--t3);margin-bottom:5px}
+.mbody{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px}
+.mteam{font-weight:700;font-size:.9rem}.mteam.r{text-align:right}
+.mvs{font-family:'Oswald',sans-serif;color:var(--accent);font-weight:700;text-align:center;font-size:1.05rem}
+.mscore{display:flex;align-items:center;gap:5px;justify-content:center;margin-top:7px}
+.sci{width:54px!important;text-align:center;padding:5px 4px!important}
+.rh{font-family:'Oswald',sans-serif;font-size:.85rem;color:var(--t3);
+  padding:9px 0 3px;border-top:1px solid var(--border);margin-top:5px;letter-spacing:.5px}
 
 /* ── STANDINGS ── */
-.standings-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: .9rem;
-}
-.standings-table th {
-  text-align: center;
-  padding: 10px 12px;
-  background: var(--surface2);
-  color: var(--text2);
-  font-weight: 700;
-  font-size: .8rem;
-  letter-spacing: .5px;
-  border-bottom: 1px solid var(--border);
-}
-.standings-table td {
-  text-align: center;
-  padding: 11px 12px;
-  border-bottom: 1px solid rgba(30,45,69,.6);
-  transition: background .15s;
-}
-.standings-table tr:hover td { background: rgba(245,158,11,.04); }
-.rank-cell { font-family: 'Oswald', sans-serif; font-size: 1.1rem; font-weight: 700; }
-.rank-1 { color: var(--gold); }
-.rank-2 { color: var(--silver); }
-.rank-3 { color: var(--bronze); }
-.team-cell { text-align: left !important; font-weight: 700; padding-left: 16px !important; }
-.pts-cell { color: var(--accent); font-weight: 700; font-family: 'Oswald', sans-serif; font-size: 1.05rem; }
-.seed-tag {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  font-family: 'Oswald', sans-serif;
-  font-size: .85rem;
-  font-weight: 700;
-  color: #000;
-  margin-right: 8px;
-}
+.stt{width:100%;border-collapse:collapse;font-size:.86rem}
+.stt th{text-align:center;padding:8px 9px;background:var(--s2);color:var(--t2);
+  font-weight:700;font-size:.73rem;border-bottom:1px solid var(--border)}
+.stt td{text-align:center;padding:9px 9px;border-bottom:1px solid rgba(30,45,69,.5)}
+.stt tr:hover td{background:rgba(245,158,11,.03)}
+.rc{font-family:'Oswald',sans-serif;font-size:1rem;font-weight:700}
+.r1{color:var(--gold)}.r2{color:var(--silver)}.r3{color:var(--bronze)}
+.tc{text-align:left!important;padding-left:12px!important;font-weight:700}
+.pts{color:var(--accent);font-weight:700;font-family:'Oswald',sans-serif}
+.sdot2{display:inline-flex;align-items:center;justify-content:center;
+  width:20px;height:20px;border-radius:50%;font-family:'Oswald',sans-serif;
+  font-size:.74rem;font-weight:700;color:#000;margin-right:5px;vertical-align:middle}
+
+/* ── HISTORY ── */
+.ht{width:100%;border-collapse:collapse;font-size:.8rem}
+.ht th{text-align:left;padding:7px 9px;background:var(--s2);color:var(--t2);
+  font-size:.73rem;border-bottom:1px solid var(--border)}
+.ht td{padding:7px 9px;border-bottom:1px solid rgba(30,45,69,.35);vertical-align:top}
+.ht tr:hover td{background:rgba(245,158,11,.02)}
+.la{display:inline-block;padding:2px 7px;border-radius:4px;font-size:.7rem;font-weight:700}
+.la-score{background:rgba(16,185,129,.15);color:#6ee7b7}
+.la-draw{background:rgba(245,158,11,.15);color:var(--accent)}
+.la-create{background:rgba(59,130,246,.15);color:#93c5fd}
+.la-reset{background:rgba(239,68,68,.15);color:#fca5a5}
+.la-auth{background:rgba(148,163,184,.12);color:var(--t2)}
+.la-delete{background:rgba(239,68,68,.2);color:#fca5a5}
+
+/* ── EVENTS ── */
+.evi{background:var(--s2);border:1px solid var(--border);border-radius:9px;
+  padding:13px 15px;margin-bottom:9px;display:flex;align-items:center;
+  justify-content:space-between;gap:10px;cursor:pointer;transition:all .18s}
+.evi:hover{border-color:rgba(245,158,11,.4);background:var(--s3)}
+.evi.active{border-color:var(--accent);background:rgba(245,158,11,.05)}
+.evn{font-weight:700;font-size:.92rem}
+.evm{font-size:.73rem;color:var(--t2);margin-top:3px}
+.evb{font-family:'Oswald',sans-serif;font-size:.78rem;padding:3px 9px;border-radius:5px;
+  background:rgba(245,158,11,.12);color:var(--accent);white-space:nowrap}
+
+/* ── STAT GRID ── */
+.sg{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:9px;margin-bottom:14px}
+.sb{background:var(--s2);border-radius:9px;padding:13px;text-align:center}
+.sbn{font-family:'Oswald',sans-serif;font-size:1.7rem;color:var(--accent)}
+.sbl{font-size:.72rem;color:var(--t2);margin-top:2px}
 
 /* ── MODAL ── */
-.modal-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,.7);
-  z-index: 200;
-  align-items: center;
-  justify-content: center;
-}
-.modal-overlay.show { display: flex; }
-.modal {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 32px;
-  width: 90%;
-  max-width: 400px;
-  animation: modalIn .25s ease-out;
-}
-@keyframes modalIn {
-  from { transform: scale(.92) translateY(12px); opacity: 0; }
-  to { transform: scale(1) translateY(0); opacity: 1; }
-}
-.modal h3 { font-family: 'Oswald', sans-serif; font-size: 1.3rem; color: var(--accent); margin-bottom: 20px; letter-spacing: 1px; }
-.modal-input { width: 100%; margin-bottom: 14px; }
-.modal-row { display: flex; gap: 10px; justify-content: flex-end; margin-top: 4px; }
-.msg { font-size: .82rem; margin-top: 8px; padding: 8px 12px; border-radius: 6px; }
-.msg.error { background: rgba(239,68,68,.1); color: #fca5a5; border: 1px solid rgba(239,68,68,.2); }
-.msg.success { background: rgba(16,185,129,.1); color: #6ee7b7; border: 1px solid rgba(16,185,129,.2); }
+.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);
+  z-index:200;align-items:center;justify-content:center}
+.ov.show{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:13px;
+  padding:26px;width:92%;max-width:420px;animation:mIn .2s ease-out}
+@keyframes mIn{from{transform:scale(.93) translateY(10px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
+.mh{font-family:'Oswald',sans-serif;font-size:1.2rem;color:var(--accent);
+  margin-bottom:16px;letter-spacing:1px}
+.mrow{display:flex;gap:8px;justify-content:flex-end;margin-top:14px}
+.mf{margin-bottom:10px}
 
-/* ── STATUS ── */
-.status-dot {
-  display: inline-block;
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  margin-right: 6px;
-}
-.status-dot.ok { background: var(--accent3); box-shadow: 0 0 6px var(--accent3); }
-.status-dot.pending { background: var(--accent); box-shadow: 0 0 6px var(--accent); animation: pulse 1.5s infinite; }
-.status-dot.err { background: var(--accent2); }
-@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .4; } }
+/* ── MISC ── */
+.spin{display:inline-block;width:14px;height:14px;border:2px solid rgba(245,158,11,.3);
+  border-top-color:var(--accent);border-radius:50%;animation:sp .7s linear infinite;vertical-align:middle}
+@keyframes sp{to{transform:rotate(360deg)}}
+.empty{text-align:center;padding:32px;color:var(--t3);font-size:.88rem}
+.div{height:1px;background:var(--border);margin:14px 0}
 
-.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-bottom: 20px; }
-.stat-box { background: var(--surface2); border-radius: 10px; padding: 16px; text-align: center; }
-.stat-num { font-family: 'Oswald', sans-serif; font-size: 2rem; color: var(--accent); }
-.stat-label { font-size: .78rem; color: var(--text2); margin-top: 4px; }
+/* ── ADMIN BTN ── */
+#adminBtn{background:transparent;border:1px solid var(--border);color:var(--t2);
+  padding:6px 12px;border-radius:7px;cursor:pointer;font-size:.76rem;
+  font-family:'Noto Sans TC',sans-serif;font-weight:700;transition:all .2s}
+#adminBtn:hover{border-color:var(--accent);color:var(--accent)}
+#adminBtn.on{background:var(--accent);color:#000;border-color:var(--accent)}
 
-/* ── SPINNER ── */
-.spinner {
-  display: inline-block;
-  width: 18px; height: 18px;
-  border: 2px solid rgba(245,158,11,.3);
-  border-top-color: var(--accent);
-  border-radius: 50%;
-  animation: spin .7s linear infinite;
-  vertical-align: middle;
-  margin-right: 6px;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-
-/* ── RESPONSIVE ── */
-@media (max-width: 600px) {
-  .header { padding: 14px 16px; }
-  .header h1 { font-size: 1.3rem; }
-  .tabs { padding: 0 8px; }
-  .tab-btn { padding: 12px 14px; font-size: .82rem; }
-  .main { padding: 20px 12px; }
-  .match-card { grid-template-columns: 1fr; gap: 6px; }
-  .team-label.home { text-align: left; }
+@media(max-width:600px){
+  .hdr{padding:12px 14px}
+  .logo{font-size:1.2rem}
+  .tabs{padding:0 8px}
+  .tb{padding:11px 12px;font-size:.8rem}
+  .main{padding:16px 12px}
+  .mbody{grid-template-columns:1fr}
+  .mteam.r{text-align:left}
 }
 </style>
 </head>
 <body>
 
 <!-- HEADER -->
-<div class="header">
-  <div>
-    <h1>⚽ 循環賽抽籤系統</h1>
-    <div class="header-sub" id="gasStatus"><span class="status-dot pending"></span>連接後端中...</div>
+<div class="hdr">
+  <div class="logo">🏆 循環賽系統</div>
+  <div class="hdr-mid">
+    <select class="ev-sel" id="evSel" onchange="switchEv(this.value)">
+      <option value="">── 選擇賽事 ──</option>
+    </select>
   </div>
-  <button class="admin-btn" id="adminToggle" onclick="toggleAdmin()">🔐 管理者登入</button>
+  <div class="hdr-right">
+    <div class="spill"><span class="sd" id="sd"></span><span id="st">連接中...</span></div>
+    <button id="adminBtn" onclick="toggleAdmin()">🔐 管理者</button>
+  </div>
 </div>
 
 <!-- TABS -->
 <div class="tabs">
-  <button class="tab-btn active" onclick="showTab('setup')">📋 賽事設定</button>
-  <button class="tab-btn" onclick="showTab('draw')">🎲 抽籤</button>
-  <button class="tab-btn" onclick="showTab('schedule')">📅 賽程表</button>
-  <button class="tab-btn" onclick="showTab('standings')">🏆 積分榜</button>
-  <button class="tab-btn" onclick="showTab('export')">📤 匯出</button>
+  <button class="tb on"  data-tab="events"    onclick="showTab(this,'events')">📁 賽事</button>
+  <button class="tb"     data-tab="setup"     onclick="showTab(this,'setup')">⚙️ 設定</button>
+  <button class="tb"     data-tab="draw"      onclick="showTab(this,'draw')">🎲 抽籤</button>
+  <button class="tb"     data-tab="schedule"  onclick="showTab(this,'schedule')">📅 賽程</button>
+  <button class="tb"     data-tab="standings" onclick="showTab(this,'standings')">🏆 積分榜</button>
+  <button class="tb"     data-tab="history"   onclick="showTab(this,'history')">📜 歷史</button>
+  <button class="tb"     data-tab="export"    onclick="showTab(this,'export')">📤 匯出</button>
 </div>
 
 <div class="main">
 
-<!-- ══ PANEL: SETUP ══ -->
-<div id="panel-setup" class="panel active">
+<!-- ══ EVENTS ══ -->
+<div id="tab-events" class="panel on">
   <div class="card">
-    <div class="card-title">賽事基本資訊</div>
-    <div class="form-row">
-      <div style="flex:2">
-        <div style="font-size:.8rem;color:var(--text2);margin-bottom:6px">賽事名稱</div>
-        <input type="text" id="eventName" style="width:100%" placeholder="例：113學年度班際球類循環賽">
+    <div class="ch"><div class="ch-l">賽事列表</div>
+      <div style="display:flex;gap:7px">
+        <button class="btn bs bsm" onclick="loadAll()">🔄 重整</button>
+        <button class="btn bp bsm" onclick="openNewEv()">＋ 新增賽事</button>
       </div>
-      <div style="flex:1">
-        <div style="font-size:.8rem;color:var(--text2);margin-bottom:6px">勝/平/負 積分</div>
-        <div style="display:flex;gap:6px">
-          <input type="text" id="ptWin" style="width:52px" placeholder="3" value="3">
-          <input type="text" id="ptDraw" style="width:52px" placeholder="1" value="1">
-          <input type="text" id="ptLose" style="width:52px" placeholder="0" value="0">
+    </div>
+    <div id="evList"><div class="empty">載入中...</div></div>
+  </div>
+</div>
+
+<!-- ══ SETUP ══ -->
+<div id="tab-setup" class="panel">
+  <div class="card">
+    <div class="ch"><div class="ch-l">賽事資訊</div></div>
+    <div class="row">
+      <div class="f2"><label>賽事名稱</label><input type="text" id="cfgName" placeholder="例：113學年度班際球賽"></div>
+      <div class="f1"><label>積分（勝/平/負）</label>
+        <div style="display:flex;gap:5px">
+          <input type="number" id="cfgW" value="3" style="width:50px">
+          <input type="number" id="cfgD" value="1" style="width:50px">
+          <input type="number" id="cfgL" value="0" style="width:50px">
         </div>
       </div>
     </div>
-    <div style="margin-top:12px">
-      <div style="font-size:.8rem;color:var(--text2);margin-bottom:6px">備註</div>
-      <textarea id="eventNote" style="width:100%;height:64px;resize:vertical" placeholder="比賽地點、規則說明..."></textarea>
-    </div>
+    <label>備註</label>
+    <textarea id="cfgNote" style="height:58px;resize:vertical;margin-bottom:4px"></textarea>
+    <div class="bgrp"><button class="btn bp" onclick="saveSetup()">💾 儲存設定</button></div>
+    <div id="setupMsg"></div>
   </div>
-
   <div class="card">
-    <div class="card-title">參賽隊伍</div>
-    <div class="info-box">隊伍將依照下方順序編號，抽籤後隨機分配出場順位。</div>
+    <div class="ch"><div class="ch-l">參賽隊伍</div></div>
+    <div class="info">隊伍依序編號，抽籤後隨機分配出場順位。</div>
     <div id="teamList"></div>
-    <div class="btn-group">
-      <button class="btn btn-secondary" onclick="addTeam()">＋ 新增隊伍</button>
-      <button class="btn btn-primary" onclick="saveSetup()" id="saveSetupBtn">💾 儲存設定</button>
+    <div class="bgrp">
+      <button class="btn bs" onclick="addTeam()">＋ 新增隊伍</button>
+      <button class="btn bp" onclick="saveTeams()">💾 儲存隊伍</button>
     </div>
+    <div id="teamsMsg"></div>
   </div>
 </div>
 
-<!-- ══ PANEL: DRAW ══ -->
-<div id="panel-draw" class="panel">
-  <div class="card" id="preDrawCard">
-    <div class="card-title">抽籤前確認</div>
-    <div id="drawTeamPreview" class="stats-grid"></div>
-    <div class="info-box">⚠️ 執行抽籤後將自動產生循環賽賽程，若已有比賽結果將一併清除。</div>
-    <div class="btn-group">
-      <button class="btn btn-primary" onclick="startDraw()" id="drawBtn">🎲 開始抽籤</button>
-    </div>
+<!-- ══ DRAW ══ -->
+<div id="tab-draw" class="panel">
+  <div class="card" id="preDraw">
+    <div class="ch"><div class="ch-l">抽籤前確認</div></div>
+    <div id="drawPrev" class="sg"></div>
+    <div class="info">⚠️ 執行抽籤將重新產生完整賽程，已記錄的比賽結果將清除。</div>
+    <div class="bgrp"><button class="btn bp" onclick="startDraw()">🎲 開始抽籤</button></div>
   </div>
-  <div id="draw-stage">
-    <div class="draw-title">🎲 隨機抽籤中</div>
-    <div class="draw-subtitle" id="drawSubtitle">正在洗牌...</div>
-    <div class="draw-ball-container ball-colors" id="ballContainer"></div>
-    <div id="drawResult" style="margin-top:16px"></div>
+  <div id="drawStage">
+    <div class="dtitle">🎲 隨機抽籤</div>
+    <div style="font-size:.86rem;color:var(--t2);margin-top:5px" id="drawSub"></div>
+    <div class="balls" id="ballsEl"></div>
+    <div id="drawRes"></div>
   </div>
 </div>
 
-<!-- ══ PANEL: SCHEDULE ══ -->
-<div id="panel-schedule" class="panel">
+<!-- ══ SCHEDULE ══ -->
+<div id="tab-schedule" class="panel">
   <div class="card">
-    <div class="card-title">比賽賽程</div>
-    <div id="scheduleList"><div style="color:var(--text2);text-align:center;padding:32px">尚未抽籤，請先至「抽籤」頁面執行抽籤。</div></div>
+    <div class="ch">
+      <div class="ch-l">比賽賽程</div>
+      <span style="font-size:.78rem;color:var(--t2)" id="schedSt"></span>
+    </div>
+    <div id="schedEl"><div class="empty">尚未抽籤。</div></div>
   </div>
 </div>
 
-<!-- ══ PANEL: STANDINGS ══ -->
-<div id="panel-standings" class="panel">
+<!-- ══ STANDINGS ══ -->
+<div id="tab-standings" class="panel">
   <div class="card">
-    <div class="card-title">積分排行榜</div>
-    <div id="standingsTable"><div style="color:var(--text2);text-align:center;padding:32px">尚無資料</div></div>
+    <div class="ch"><div class="ch-l">積分排行榜</div></div>
+    <div id="standEl"><div class="empty">尚無資料。</div></div>
   </div>
 </div>
 
-<!-- ══ PANEL: EXPORT ══ -->
-<div id="panel-export" class="panel">
+<!-- ══ HISTORY ══ -->
+<div id="tab-history" class="panel">
   <div class="card">
-    <div class="card-title">匯出 / 列印</div>
-    <div style="display:grid;gap:12px">
-      <button class="btn btn-secondary" onclick="exportCSV('schedule')">📄 匯出賽程表 CSV</button>
-      <button class="btn btn-secondary" onclick="exportCSV('standings')">📊 匯出積分榜 CSV</button>
-      <button class="btn btn-primary" onclick="printSchedule()">🖨️ 列印賽程表</button>
-      <button class="btn btn-primary" onclick="printStandings()">🖨️ 列印積分榜</button>
+    <div class="ch">
+      <div class="ch-l">操作歷史紀錄</div>
+      <button class="btn bs bsm" onclick="loadHist()">🔄 重整</button>
     </div>
-    <div class="info-box" style="margin-top:16px">
-      Google 試算表已即時同步，請至 Google 試算表開啟共用連結查看完整資料。
-    </div>
-    <button class="btn btn-success" onclick="openSheet()" style="margin-top:8px">🔗 開啟 Google 試算表</button>
+    <div id="histEl"><div class="empty">載入中...</div></div>
   </div>
+</div>
 
-  <div class="card" id="adminDataCard" style="display:none">
-    <div class="card-title">管理者操作</div>
-    <div style="display:grid;gap:10px">
-      <button class="btn btn-danger" onclick="resetAll()">🗑️ 清除所有資料（重置）</button>
-      <button class="btn btn-secondary" onclick="changePassword()">🔑 修改管理者密碼</button>
+<!-- ══ EXPORT ══ -->
+<div id="tab-export" class="panel">
+  <div class="card">
+    <div class="ch"><div class="ch-l">匯出資料</div></div>
+    <div class="g2" style="margin-bottom:12px">
+      <button class="btn bs" onclick="xcsv('schedule')">📄 賽程表 CSV</button>
+      <button class="btn bs" onclick="xcsv('standings')">📊 積分榜 CSV</button>
+      <button class="btn bs" onclick="xcsv('history')">📜 歷史紀錄 CSV</button>
+      <button class="btn bs" onclick="xcsv('all')">📦 完整資料 CSV</button>
+    </div>
+    <div class="div"></div>
+    <div class="g2" style="margin-bottom:12px">
+      <button class="btn bp" onclick="printSched()">🖨️ 列印賽程表</button>
+      <button class="btn bp" onclick="printStand()">🖨️ 列印積分榜</button>
+    </div>
+    <div class="div"></div>
+    <button class="btn bg" onclick="openSheet()" style="width:100%;justify-content:center">🔗 開啟 Google 試算表</button>
+  </div>
+  <div class="card" id="adminCard" style="display:none">
+    <div class="ch"><div class="ch-l">管理者操作</div></div>
+    <div style="display:grid;gap:9px">
+      <button class="btn bd" onclick="doReset()">🔄 重置目前賽事（清除賽程與成績）</button>
+      <button class="btn bd" onclick="doDelete()">❌ 刪除目前賽事</button>
+      <button class="btn bs" onclick="openChgPw()">🔑 修改管理者密碼</button>
     </div>
   </div>
 </div>
 
 </div><!-- /main -->
 
-<!-- ══ ADMIN MODAL ══ -->
-<div class="modal-overlay" id="adminModal">
+<!-- ══ MODAL: GAS Config ══ -->
+<div class="ov" id="cfgMod">
+  <div class="modal" style="max-width:480px">
+    <div class="mh">⚙️ 連接 Google Apps Script</div>
+    <p style="font-size:.82rem;color:var(--t2);margin-bottom:14px">GAS 網址已預先填入，設定管理者密碼後即可連接。</p>
+    <label class="mf">GAS Web App 網址</label>
+    <input type="text" id="cfgUrl" style="margin-bottom:10px">
+    <label>管理者密碼（首次設定）</label>
+    <input type="password" id="cfgPw" placeholder="設定密碼" style="margin-bottom:4px"
+      onkeydown="if(event.key==='Enter')initCfg()">
+    <div id="cfgMsg"></div>
+    <div class="mrow"><button class="btn bp" onclick="initCfg()">連接並初始化</button></div>
+  </div>
+</div>
+
+<!-- ══ MODAL: Admin ══ -->
+<div class="ov" id="adminMod">
   <div class="modal">
-    <h3>🔐 管理者驗證</h3>
-    <input type="password" id="adminPwInput" class="modal-input" placeholder="請輸入密碼" onkeydown="if(event.key==='Enter')checkAdmin()">
+    <div class="mh">🔐 管理者驗證</div>
+    <input type="password" id="adminPw" placeholder="請輸入密碼" style="margin-bottom:4px"
+      onkeydown="if(event.key==='Enter')checkAdmin()">
     <div id="adminMsg"></div>
-    <div class="modal-row" style="margin-top:16px">
-      <button class="btn btn-secondary" onclick="closeModal('adminModal')">取消</button>
-      <button class="btn btn-primary" onclick="checkAdmin()">驗證</button>
+    <div class="mrow">
+      <button class="btn bs" onclick="close_('adminMod')">取消</button>
+      <button class="btn bp" onclick="checkAdmin()">驗證</button>
     </div>
   </div>
 </div>
 
-<!-- ══ CHANGE PW MODAL ══ -->
-<div class="modal-overlay" id="changePwModal">
+<!-- ══ MODAL: Change PW ══ -->
+<div class="ov" id="chgPwMod">
   <div class="modal">
-    <h3>🔑 修改密碼</h3>
-    <input type="password" id="newPw1" class="modal-input" placeholder="新密碼">
-    <input type="password" id="newPw2" class="modal-input" placeholder="再次輸入新密碼">
-    <div id="changePwMsg"></div>
-    <div class="modal-row" style="margin-top:16px">
-      <button class="btn btn-secondary" onclick="closeModal('changePwModal')">取消</button>
-      <button class="btn btn-primary" onclick="submitChangePw()">確認修改</button>
+    <div class="mh">🔑 修改密碼</div>
+    <input type="password" id="np1" placeholder="新密碼" style="margin-bottom:8px">
+    <input type="password" id="np2" placeholder="再次輸入" style="margin-bottom:4px">
+    <div id="cpMsg"></div>
+    <div class="mrow">
+      <button class="btn bs" onclick="close_('chgPwMod')">取消</button>
+      <button class="btn bp" onclick="doChgPw()">確認修改</button>
     </div>
   </div>
 </div>
 
-<!-- ══ GAS CONFIG MODAL ══ -->
-<div class="modal-overlay show" id="configModal">
-  <div class="modal" style="max-width:520px">
-    <h3>⚙️ 連接 Google Apps Script</h3>
-    <p style="font-size:.85rem;color:var(--text2);margin-bottom:16px">請先部署 GAS Web App，將網址貼入下方。</p>
-    <div style="font-size:.8rem;color:var(--text2);margin-bottom:6px">GAS Web App 網址</div>
-    <input type="text" id="gasUrlInput" class="modal-input" placeholder="https://script.google.com/macros/s/...">
-    <div style="font-size:.8rem;color:var(--text2);margin-bottom:6px;margin-top:8px">管理者密碼（首次設定）</div>
-    <input type="password" id="initPwInput" class="modal-input" placeholder="設定管理者密碼">
-    <div id="configMsg"></div>
-    <div class="modal-row" style="margin-top:16px">
-      <button class="btn btn-primary" onclick="initConfig()">連接並初始化</button>
+<!-- ══ MODAL: New Event ══ -->
+<div class="ov" id="newEvMod">
+  <div class="modal">
+    <div class="mh">＋ 新增賽事</div>
+    <label>賽事名稱</label>
+    <input type="text" id="newEvName" placeholder="例：113學年度班際足球賽" style="margin-bottom:4px"
+      onkeydown="if(event.key==='Enter')submitNewEv()">
+    <div id="newEvMsg"></div>
+    <div class="mrow">
+      <button class="btn bs" onclick="close_('newEvMod')">取消</button>
+      <button class="btn bp" onclick="submitNewEv()">建立</button>
     </div>
   </div>
 </div>
 
 <script>
 // ═══════════════════════════════════════════
-// 全域狀態
+// ★ GAS 網址（已內嵌）
 // ═══════════════════════════════════════════
-let GAS_URL = localStorage.getItem('rr_gas_url') || '';
-let ADMIN_MODE = false;
-let STATE = {
-  event: { name: '', ptWin: 3, ptDraw: 1, ptLose: 0, note: '' },
-  teams: [],         // [{id, name, seed}]  seed = 抽籤號碼
-  matches: [],       // [{id, r, home, away, hs, as, done}]
-  sheetUrl: ''
-};
+const GAS_DEFAULT = 'https://script.google.com/macros/s/AKfycbwDFOgMxha5Pm6iKqWEyncc3hWBgTcm91UNtTkpA8fbCM-bVQmQ2Hl2sN2ed3tMiCh_nw/exec';
+
+const BPAL = ['#f59e0b','#ef4444','#3b82f6','#10b981','#8b5cf6','#ec4899',
+  '#06b6d4','#84cc16','#f97316','#a855f7','#14b8a6','#f43f5e',
+  '#6366f1','#22c55e','#eab308','#64748b'];
+
+let GAS_URL = localStorage.getItem('rr_gas') || '';
+let ADMIN   = false;
+let CUR_EID = localStorage.getItem('rr_eid') || '';
+let EVENTS  = [];
+let STATE   = { event:{name:'',ptWin:3,ptDraw:1,ptLose:0,note:''}, teams:[], matches:[], sheetUrl:'' };
+let HIST_CACHE = [];  // 歷史紀錄快取（供匯出用）
 
 // ═══════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════
 window.addEventListener('DOMContentLoaded', () => {
+  // 預填 GAS 網址
+  $('cfgUrl').value = GAS_URL || GAS_DEFAULT;
+
   if (GAS_URL) {
-    document.getElementById('configModal').classList.remove('show');
-    loadFromGAS();
+    close_('cfgMod');
+    loadAll();
+  } else {
+    // 首次使用：顯示設定 modal
+    document.getElementById('cfgMod').classList.add('show');
   }
-  renderTeams();
 });
 
 // ═══════════════════════════════════════════
 // GAS 通訊
 // ═══════════════════════════════════════════
-async function gasCall(action, payload = {}) {
-  const body = { action, ...payload };
-  const r = await fetch(GAS_URL, {
-    method: 'POST',
-    body: JSON.stringify(body)
-  });
+async function gas(action, payload = {}) {
+  const r = await fetch(GAS_URL, { method:'POST', body: JSON.stringify({ action, ...payload }) });
   return r.json();
 }
-
-async function loadFromGAS() {
-  setStatus('pending', '載入資料中...');
-  try {
-    const d = await gasCall('load');
-    if (d.ok) {
-      STATE = { ...STATE, ...d.data };
-      applyStateToUI();
-      setStatus('ok', '已連接 Google 試算表');
-    } else {
-      setStatus('err', '載入失敗：' + d.msg);
-    }
-  } catch (e) {
-    setStatus('err', '無法連接 GAS');
-  }
-}
-
-async function saveToGAS(silent = false) {
-  if (!silent) showSaving();
-  try {
-    const d = await gasCall('save', { state: STATE });
-    if (!d.ok) alert('儲存失敗：' + d.msg);
-    else if (!silent) setStatus('ok', '已儲存至 Google 試算表');
-  } catch (e) {
-    if (!silent) setStatus('err', '儲存失敗');
-  }
-}
-
-function showSaving() {
-  setStatus('pending', '儲存中...');
-}
-
-function setStatus(type, msg) {
-  document.getElementById('gasStatus').innerHTML =
-    `<span class="status-dot ${type}"></span>${msg}`;
+function setSt(type, txt) {
+  document.getElementById('sd').className = 'sd ' + type;
+  document.getElementById('st').textContent = txt;
 }
 
 // ═══════════════════════════════════════════
 // INIT CONFIG
 // ═══════════════════════════════════════════
-async function initConfig() {
-  const url = document.getElementById('gasUrlInput').value.trim();
-  const pw = document.getElementById('initPwInput').value.trim();
-  if (!url) return showMsg('configMsg', '請輸入 GAS 網址', 'error');
-  if (!pw) return showMsg('configMsg', '請設定管理者密碼', 'error');
-  showMsg('configMsg', '<span class="spinner"></span>連接中...', 'success');
+async function initCfg() {
+  const url = $('cfgUrl').value.trim();
+  const pw  = $('cfgPw').value.trim();
+  if (!url) return msg('cfgMsg','請輸入 GAS 網址','err');
+  if (!pw)  return msg('cfgMsg','請設定管理者密碼','err');
+  msg('cfgMsg','<span class="spin"></span> 連接中...','inf');
   GAS_URL = url;
   try {
-    const d = await gasCall('init', { password: pw });
+    const d = await gas('init', { password: pw });
     if (d.ok) {
-      localStorage.setItem('rr_gas_url', url);
+      localStorage.setItem('rr_gas', url);
       STATE.sheetUrl = d.sheetUrl || '';
-      document.getElementById('configModal').classList.remove('show');
-      setStatus('ok', '已連接 Google 試算表');
-    } else {
-      showMsg('configMsg', '連接失敗：' + d.msg, 'error');
+      close_('cfgMod');
+      setSt('ok','已連接');
+      loadAll();
+    } else msg('cfgMsg','失敗：' + d.msg,'err');
+  } catch(e) { msg('cfgMsg','無法連接 GAS','err'); }
+}
+
+// ═══════════════════════════════════════════
+// LOAD ALL
+// ═══════════════════════════════════════════
+async function loadAll() {
+  setSt('busy','載入中...');
+  try {
+    const d = await gas('listEvents');
+    if (!d.ok) { setSt('err','載入失敗'); return; }
+    EVENTS = d.events || [];
+    STATE.sheetUrl = d.sheetUrl || STATE.sheetUrl;
+    renderEvList();
+    fillSel();
+    if (CUR_EID) await loadEv(CUR_EID, true);
+    setSt('ok','已連接');
+  } catch(e) { setSt('err','連接失敗'); }
+}
+
+async function loadEv(eid, silent = false) {
+  if (!eid) return;
+  if (!silent) setSt('busy','載入賽事...');
+  try {
+    const d = await gas('loadEvent', { eid });
+    if (d.ok) {
+      CUR_EID = eid;
+      localStorage.setItem('rr_eid', eid);
+      STATE = { ...STATE, ...d.data };
+      applyUI();
+      if (!silent) setSt('ok','已載入');
     }
-  } catch (e) {
-    showMsg('configMsg', '無法連接，請確認 GAS 網址正確', 'error');
-  }
+  } catch(e) { setSt('err','載入失敗'); }
+}
+
+function applyUI() {
+  $('cfgName').value = STATE.event.name  || '';
+  $('cfgW').value    = STATE.event.ptWin  ?? 3;
+  $('cfgD').value    = STATE.event.ptDraw ?? 1;
+  $('cfgL').value    = STATE.event.ptLose ?? 0;
+  $('cfgNote').value = STATE.event.note  || '';
+  renderTeams(); renderSched(); renderStand();
 }
 
 // ═══════════════════════════════════════════
-// TABS
+// EVENTS
 // ═══════════════════════════════════════════
-function showTab(tab) {
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('panel-' + tab).classList.add('active');
-  event.target.classList.add('active');
-  if (tab === 'draw') renderDrawPreview();
-  if (tab === 'schedule') renderSchedule();
-  if (tab === 'standings') renderStandings();
+function renderEvList() {
+  const el = document.getElementById('evList');
+  if (!EVENTS.length) { el.innerHTML = '<div class="empty">尚無賽事，請點「＋ 新增賽事」</div>'; return; }
+  el.innerHTML = EVENTS.map(e => `
+    <div class="evi ${e.eid===CUR_EID?'active':''}" onclick="selEv('${e.eid}')">
+      <div>
+        <div class="evn">${esc(e.name)}</div>
+        <div class="evm">建立：${e.createdAt||'—'} · ${e.teamCount||0} 隊 · ${e.doneCount||0}/${e.matchCount||0} 場完賽</div>
+      </div>
+      <span class="evb">${e.eid===CUR_EID?'✓ 目前':'切換'}</span>
+    </div>`).join('');
+}
+
+function fillSel() {
+  const sel = document.getElementById('evSel');
+  sel.innerHTML = '<option value="">── 選擇賽事 ──</option>' +
+    EVENTS.map(e => `<option value="${e.eid}" ${e.eid===CUR_EID?'selected':''}>${esc(e.name)}</option>`).join('');
+}
+
+async function selEv(eid) { await loadEv(eid); renderEvList(); fillSel(); }
+async function switchEv(eid) { if (eid) { await loadEv(eid); renderEvList(); } }
+
+function openNewEv() {
+  if (!ADMIN) return needAdmin();
+  $('newEvName').value = '';
+  msg('newEvMsg','','');
+  open_('newEvMod');
+}
+
+async function submitNewEv() {
+  const name = $('newEvName').value.trim();
+  if (!name) return msg('newEvMsg','請輸入賽事名稱','err');
+  msg('newEvMsg','<span class="spin"></span> 建立中...','inf');
+  try {
+    const d = await gas('createEvent', { name });
+    if (d.ok) {
+      close_('newEvMod');
+      await loadAll();
+      await loadEv(d.eid);
+      showTab(document.querySelector('[data-tab="setup"]'), 'setup');
+    } else msg('newEvMsg','失敗：'+d.msg,'err');
+  } catch(e) { msg('newEvMsg','連接失敗','err'); }
 }
 
 // ═══════════════════════════════════════════
-// TEAMS
+// SETUP
 // ═══════════════════════════════════════════
-function addTeam(name = '') {
-  STATE.teams.push({ id: Date.now() + Math.random(), name, seed: 0 });
+function addTeam(name='') {
+  STATE.teams.push({ id: uid(), name, seed:0 });
   renderTeams();
 }
 
 function removeTeam(id) {
+  if (!ADMIN) return needAdmin();
   STATE.teams = STATE.teams.filter(t => t.id !== id);
   renderTeams();
 }
@@ -720,438 +589,487 @@ function removeTeam(id) {
 function renderTeams() {
   const el = document.getElementById('teamList');
   if (!STATE.teams.length) {
-    el.innerHTML = '<div style="color:var(--text2);font-size:.85rem;padding:8px 0">尚未新增隊伍</div>';
+    el.innerHTML = '<div style="color:var(--t3);font-size:.82rem;padding:4px 0">尚未新增隊伍</div>';
     return;
   }
-  el.innerHTML = STATE.teams.map((t, i) => `
-    <div class="form-row">
-      <div class="team-input-wrap">
-        <span class="team-badge">${i + 1}</span>
-        <input type="text" class="team-input" value="${escHtml(t.name)}"
-          placeholder="隊伍名稱"
-          oninput="STATE.teams[${i}].name=this.value">
-      </div>
-      ${ADMIN_MODE ? `<button class="remove-btn" onclick="removeTeam(${t.id})">✕</button>` : ''}
-    </div>
-  `).join('');
+  el.innerHTML = STATE.teams.map((t,i) => `
+    <div class="tr">
+      <span class="tbadge">${i+1}</span>
+      <input type="text" value="${esc(t.name)}" placeholder="隊伍名稱"
+        oninput="STATE.teams[${i}].name=this.value" ${ADMIN?'':'readonly'}>
+      ${ADMIN ? `<button class="tdel" onclick="removeTeam('${t.id}')">✕</button>` : ''}
+    </div>`).join('');
 }
 
-// ═══════════════════════════════════════════
-// SETUP SAVE
-// ═══════════════════════════════════════════
 async function saveSetup() {
-  if (!ADMIN_MODE) return alert('請先登入管理者才能儲存。');
-  STATE.event.name = document.getElementById('eventName').value.trim();
-  STATE.event.ptWin = +document.getElementById('ptWin').value || 3;
-  STATE.event.ptDraw = +document.getElementById('ptDraw').value || 1;
-  STATE.event.ptLose = +document.getElementById('ptLose').value || 0;
-  STATE.event.note = document.getElementById('eventNote').value;
-  // collect team names
-  document.querySelectorAll('.team-input').forEach((inp, i) => {
+  if (!ADMIN) return needAdmin();
+  if (!CUR_EID) return alert('請先選擇或新增賽事');
+  STATE.event.name   = $('cfgName').value;
+  STATE.event.ptWin  = +$('cfgW').value || 3;
+  STATE.event.ptDraw = +$('cfgD').value || 1;
+  STATE.event.ptLose = +$('cfgL').value || 0;
+  STATE.event.note   = $('cfgNote').value;
+  setSt('busy','儲存中...');
+  const d = await gas('saveEvent', { eid:CUR_EID,
+    state:{ event:STATE.event, teams:STATE.teams, matches:STATE.matches } });
+  if (d.ok) { msg('setupMsg','✅ 已儲存','ok'); setSt('ok','已儲存'); await loadAll(); }
+  else { msg('setupMsg','失敗：'+d.msg,'err'); setSt('err','儲存失敗'); }
+}
+
+async function saveTeams() {
+  if (!ADMIN) return needAdmin();
+  if (!CUR_EID) return alert('請先選擇或新增賽事');
+  document.querySelectorAll('#teamList input[type=text]').forEach((inp,i) => {
     if (STATE.teams[i]) STATE.teams[i].name = inp.value.trim();
   });
   STATE.teams = STATE.teams.filter(t => t.name);
-  await saveToGAS();
-  renderTeams();
-}
-
-function applyStateToUI() {
-  document.getElementById('eventName').value = STATE.event.name || '';
-  document.getElementById('ptWin').value = STATE.event.ptWin ?? 3;
-  document.getElementById('ptDraw').value = STATE.event.ptDraw ?? 1;
-  document.getElementById('ptLose').value = STATE.event.ptLose ?? 0;
-  document.getElementById('eventNote').value = STATE.event.note || '';
-  renderTeams();
-  renderSchedule();
-  renderStandings();
+  setSt('busy','儲存中...');
+  const d = await gas('saveEvent', { eid:CUR_EID,
+    state:{ event:STATE.event, teams:STATE.teams, matches:STATE.matches } });
+  if (d.ok) { msg('teamsMsg','✅ 已儲存','ok'); setSt('ok','已儲存'); renderTeams(); }
+  else msg('teamsMsg','失敗：'+d.msg,'err');
 }
 
 // ═══════════════════════════════════════════
 // DRAW
 // ═══════════════════════════════════════════
-function renderDrawPreview() {
+function renderDrawPrev() {
   const teams = STATE.teams.filter(t => t.name);
-  const el = document.getElementById('drawTeamPreview');
-  el.innerHTML = teams.map((t, i) => `
-    <div class="stat-box">
-      <div class="stat-num">${i + 1}</div>
-      <div class="stat-label">${escHtml(t.name)}</div>
-    </div>
-  `).join('');
-  if (!teams.length) el.innerHTML = '<div style="color:var(--text2)">請先在「賽事設定」新增隊伍</div>';
+  document.getElementById('drawPrev').innerHTML = teams.length
+    ? teams.map((t,i) => `<div class="sb"><div class="sbn">${i+1}</div><div class="sbl">${esc(t.name)}</div></div>`).join('')
+    : '<div style="color:var(--t3)">請先至「設定」新增隊伍</div>';
 }
-
-const BALL_COLORS = [
-  '#f59e0b','#ef4444','#3b82f6','#10b981','#8b5cf6','#ec4899',
-  '#06b6d4','#84cc16','#f97316','#a855f7','#14b8a6','#f43f5e',
-  '#6366f1','#22c55e','#eab308','#64748b'
-];
 
 async function startDraw() {
-  if (!ADMIN_MODE) return alert('請先登入管理者才能執行抽籤。');
+  if (!ADMIN) return needAdmin();
+  if (!CUR_EID) return alert('請先選擇賽事');
   const teams = STATE.teams.filter(t => t.name);
-  if (teams.length < 2) return alert('請至少設定 2 支隊伍。');
+  if (teams.length < 2) return alert('請至少設定 2 支隊伍');
 
-  document.getElementById('preDrawCard').style.display = 'none';
-  const stage = document.getElementById('draw-stage');
-  stage.style.display = 'block';
-  document.getElementById('drawSubtitle').textContent = '正在洗牌...';
+  document.getElementById('preDraw').style.display = 'none';
+  document.getElementById('drawStage').style.display = 'block';
+  const sub = document.getElementById('drawSub');
+  const bEl = document.getElementById('ballsEl');
+  bEl.innerHTML = '';
+  sub.textContent = '洗牌中...';
 
-  const container = document.getElementById('ballContainer');
-  container.innerHTML = '';
-
-  // 隨機抽號
-  const seeds = Array.from({length: teams.length}, (_, i) => i + 1);
-  // shuffle
-  for (let i = seeds.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [seeds[i], seeds[j]] = [seeds[j], seeds[i]];
-  }
-
-  // 動畫逐一顯示
+  const seeds = shuffle([...Array(teams.length)].map((_,i) => i+1));
   for (let i = 0; i < teams.length; i++) {
-    await delay(320);
-    document.getElementById('drawSubtitle').textContent = `抽到第 ${seeds[i]} 號：${teams[i].name}`;
-    const ball = document.createElement('div');
-    ball.className = 'draw-ball';
-    ball.style.background = BALL_COLORS[i % BALL_COLORS.length];
-    ball.style.animationDelay = '0s';
-    ball.setAttribute('data-num', seeds[i]);
-    ball.title = teams[i].name;
-    container.appendChild(ball);
+    await delay(290);
+    sub.textContent = `第 ${seeds[i]} 號 → ${teams[i].name}`;
+    const b = document.createElement('div');
+    b.className = 'ball';
+    b.style.background = BPAL[i % BPAL.length];
+    b.textContent = seeds[i];
+    bEl.appendChild(b);
   }
+  await delay(380);
+  sub.textContent = '產生賽程中...';
 
-  await delay(500);
-  document.getElementById('drawSubtitle').textContent = '抽籤完成！正在產生賽程...';
+  teams.forEach((t,i) => t.seed = seeds[i]);
+  STATE.teams = [...teams].sort((a,b) => a.seed - b.seed);
+  STATE.matches = genRR(STATE.teams);
 
-  // 套用種子
-  teams.forEach((t, i) => { t.seed = seeds[i]; });
-  // 依種子排序
-  STATE.teams = [...teams].sort((a, b) => a.seed - b.seed);
+  setSt('busy','儲存中...');
+  const d = await gas('saveEvent', { eid:CUR_EID,
+    state:{ event:STATE.event, teams:STATE.teams, matches:STATE.matches },
+    logAction:'draw', logDetail:`${teams.length}隊抽籤，共${STATE.matches.length}場` });
+  if (d.ok) setSt('ok','已儲存');
 
-  // 產生循環賽
-  STATE.matches = generateRoundRobin(STATE.teams);
-
-  await saveToGAS();
-
-  // 顯示結果
-  const resultEl = document.getElementById('drawResult');
-  resultEl.innerHTML = `
-    <div style="background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.3);border-radius:10px;padding:16px;margin-top:8px">
-      <div style="color:var(--accent3);font-weight:700;margin-bottom:8px">✅ 抽籤完成 · 共 ${STATE.matches.length} 場比賽</div>
-      ${STATE.teams.map(t => `<div style="font-size:.9rem;margin:4px 0"><span style="color:var(--accent);font-family:'Oswald',sans-serif;font-size:1rem;font-weight:700">No.${t.seed}</span> ${escHtml(t.name)}</div>`).join('')}
+  document.getElementById('drawRes').innerHTML = `
+    <div class="al ok" style="text-align:left;max-width:380px;margin:14px auto 0">
+      ✅ 抽籤完成 · 共 ${STATE.matches.length} 場比賽<br>
+      ${STATE.teams.map(t=>`<div style="margin-top:3px;font-size:.85rem">
+        <span style="color:var(--accent);font-family:'Oswald',sans-serif">No.${t.seed}</span> ${esc(t.name)}</div>`).join('')}
     </div>
-    <div class="btn-group" style="justify-content:center;margin-top:16px">
-      <button class="btn btn-primary" onclick="goToSchedule()">📅 查看賽程</button>
-      <button class="btn btn-secondary" onclick="resetDrawUI()">↩ 返回</button>
-    </div>
-  `;
+    <div class="bgrp" style="justify-content:center;margin-top:14px">
+      <button class="btn bp" onclick="goSched()">📅 查看賽程</button>
+      <button class="btn bs" onclick="resetDraw()">↩ 返回</button>
+    </div>`;
+  await loadAll();
 }
 
-function resetDrawUI() {
-  document.getElementById('preDrawCard').style.display = 'block';
-  document.getElementById('draw-stage').style.display = 'none';
-  document.getElementById('ballContainer').innerHTML = '';
-  document.getElementById('drawResult').innerHTML = '';
+function resetDraw() {
+  document.getElementById('preDraw').style.display = 'block';
+  document.getElementById('drawStage').style.display = 'none';
+  document.getElementById('ballsEl').innerHTML = '';
+  document.getElementById('drawRes').innerHTML = '';
 }
 
-function goToSchedule() {
-  document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', i === 2));
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  document.getElementById('panel-schedule').classList.add('active');
-  renderSchedule();
-  resetDrawUI();
+function goSched() {
+  resetDraw();
+  showTab(document.querySelector('[data-tab="schedule"]'), 'schedule');
 }
 
-// ═══════════════════════════════════════════
-// ROUND-ROBIN ALGORITHM
-// ═══════════════════════════════════════════
-function generateRoundRobin(teams) {
-  const n = teams.length;
-  const matches = [];
+function genRR(teams) {
   const arr = [...teams];
-  if (n % 2 === 1) arr.push({ id: 'bye', name: '輪空', seed: 0 });
-  const half = arr.length / 2;
-  const rounds = arr.length - 1;
-  let matchId = 1;
+  if (arr.length % 2 === 1) arr.push({ id:'bye', name:'輪空', seed:0 });
+  const half = arr.length / 2, rounds = arr.length - 1;
+  const ms = []; let mid = 1;
   for (let r = 0; r < rounds; r++) {
     for (let i = 0; i < half; i++) {
-      const home = arr[i];
-      const away = arr[arr.length - 1 - i];
-      if (home.id === 'bye' || away.id === 'bye') continue;
-      matches.push({ id: matchId++, r: r + 1, home: home.id, away: away.id, hs: '', as: '', done: false });
+      const h = arr[i], a = arr[arr.length-1-i];
+      if (h.id==='bye' || a.id==='bye') continue;
+      ms.push({ id:mid++, r:r+1, home:h.id, away:a.id, hs:'', as:'', done:false });
     }
-    // rotate: fix first, rotate rest
     arr.splice(1, 0, arr.pop());
   }
-  return matches;
+  return ms;
 }
 
 // ═══════════════════════════════════════════
 // SCHEDULE
 // ═══════════════════════════════════════════
-function renderSchedule() {
-  const el = document.getElementById('scheduleList');
-  if (!STATE.matches.length) {
-    el.innerHTML = '<div style="color:var(--text2);text-align:center;padding:32px">尚未抽籤，請先至「抽籤」頁面執行抽籤。</div>';
-    return;
-  }
-  const byRound = {};
-  STATE.matches.forEach(m => {
-    if (!byRound[m.r]) byRound[m.r] = [];
-    byRound[m.r].push(m);
-  });
-  const teamMap = Object.fromEntries(STATE.teams.map(t => [t.id, t]));
-  let html = '<div class="schedule-grid">';
-  Object.entries(byRound).forEach(([r, ms]) => {
-    html += `<div class="round-header">第 ${r} 輪</div>`;
+function renderSched() {
+  const el = document.getElementById('schedEl');
+  if (!STATE.matches.length) { el.innerHTML = '<div class="empty">尚未抽籤。</div>'; return; }
+  const tm = Object.fromEntries(STATE.teams.map(t => [t.id, t]));
+  const byR = {};
+  STATE.matches.forEach(m => { (byR[m.r] = byR[m.r] || []).push(m); });
+  const done = STATE.matches.filter(m => m.done).length;
+  document.getElementById('schedSt').textContent = `${done}/${STATE.matches.length} 場完賽`;
+  let html = '';
+  Object.entries(byR).forEach(([r, ms]) => {
+    html += `<div class="rh">第 ${r} 輪</div>`;
     ms.forEach(m => {
-      const home = teamMap[m.home];
-      const away = teamMap[m.away];
-      if (!home || !away) return;
-      const editable = ADMIN_MODE;
-      html += `
-        <div class="match-card ${m.done ? 'finished' : ''}" id="mc-${m.id}">
-          <div class="match-no">場次 #${m.id} · 第${r}輪</div>
-          <div class="team-label home">${escHtml(home.name)}</div>
-          <div class="vs-badge">VS</div>
-          <div class="team-label">${escHtml(away.name)}</div>
-          ${editable ? `
-          <div style="grid-column:1/-1;display:flex;align-items:center;gap:8px;justify-content:center">
-            <input type="number" class="score-input" id="hs-${m.id}" value="${m.hs}" min="0" placeholder="0" style="width:60px">
-            <span class="score-sep">:</span>
-            <input type="number" class="score-input" id="as-${m.id}" value="${m.as}" min="0" placeholder="0" style="width:60px">
-            <button class="save-score-btn" onclick="saveScore(${m.id})">儲存</button>
-            ${m.done ? '<span style="color:var(--accent3);font-size:.8rem">✓ 已記錄</span>' : ''}
-          </div>` : `
-          <div style="grid-column:1/-1;text-align:center;font-size:.9rem;color:${m.done ? 'var(--text)' : 'var(--text2)'}">
-            ${m.done ? `<span style="font-family:'Oswald',sans-serif;font-size:1.3rem">${m.hs} : ${m.as}</span>` : '待賽'}
-          </div>`}
-        </div>`;
+      const h = tm[m.home], a = tm[m.away];
+      if (!h || !a) return;
+      html += `<div class="mc ${m.done?'done':''}" id="mc-${m.id}">
+        <div class="mno">場次 #${m.id}</div>
+        <div class="mbody">
+          <div class="mteam r">${esc(h.name)}</div>
+          <div class="mvs">VS</div>
+          <div class="mteam">${esc(a.name)}</div>
+        </div>
+        ${ADMIN ? `<div class="mscore">
+          <input type="number" class="sci" id="hs-${m.id}" value="${m.hs}" min="0" placeholder="0">
+          <span style="color:var(--t2);font-weight:700">:</span>
+          <input type="number" class="sci" id="as-${m.id}" value="${m.as}" min="0" placeholder="0">
+          <button class="btn bg bsm" onclick="saveScore(${m.id})">儲存</button>
+          ${m.done?'<span style="color:var(--green);font-size:.72rem">✓</span>':''}
+        </div>`
+        : `<div style="text-align:center;font-size:.86rem;margin-top:6px;color:${m.done?'var(--text)':'var(--t3)'}">
+          ${m.done?`<span style="font-family:'Oswald',sans-serif;font-size:1.15rem">${m.hs}：${m.as}</span>`:'待賽'}
+        </div>`}
+      </div>`;
     });
   });
-  html += '</div>';
   el.innerHTML = html;
 }
 
-async function saveScore(matchId) {
-  const hs = document.getElementById('hs-' + matchId)?.value;
-  const as = document.getElementById('as-' + matchId)?.value;
-  if (hs === '' || as === '') return alert('請輸入兩方分數');
-  const m = STATE.matches.find(x => x.id === matchId);
+async function saveScore(mid) {
+  const hs = document.getElementById('hs-'+mid)?.value;
+  const as = document.getElementById('as-'+mid)?.value;
+  if (hs==='' || as==='') return alert('請輸入兩方分數');
+  const m = STATE.matches.find(x => x.id === mid);
   if (!m) return;
+  const tm = Object.fromEntries(STATE.teams.map(t => [t.id,t]));
+  const old = m.done ? `原${m.hs}:${m.as}` : '新增';
   m.hs = +hs; m.as = +as; m.done = true;
-  await saveToGAS();
-  renderSchedule();
-  renderStandings();
+  const detail = `場次#${mid} ${tm[m.home]?.name||'?'} ${m.hs}:${m.as} ${tm[m.away]?.name||'?'} (${old})`;
+  setSt('busy','儲存...');
+  const d = await gas('saveEvent', { eid:CUR_EID,
+    state:{ event:STATE.event, teams:STATE.teams, matches:STATE.matches },
+    logAction:'score', logDetail:detail });
+  if (d.ok) { setSt('ok','已儲存'); renderSched(); renderStand(); }
+  else setSt('err','儲存失敗');
 }
 
 // ═══════════════════════════════════════════
 // STANDINGS
 // ═══════════════════════════════════════════
-function calcStandings() {
+function calcStand() {
   const { ptWin, ptDraw, ptLose } = STATE.event;
   const map = {};
-  STATE.teams.forEach(t => {
-    map[t.id] = { id: t.id, name: t.name, seed: t.seed, W: 0, D: 0, L: 0, GF: 0, GA: 0, P: 0, played: 0 };
-  });
+  STATE.teams.forEach(t => { map[t.id] = { id:t.id, name:t.name, seed:t.seed, W:0,D:0,L:0,GF:0,GA:0,P:0,played:0 }; });
   STATE.matches.filter(m => m.done).forEach(m => {
     const h = map[m.home], a = map[m.away];
     if (!h || !a) return;
     const hs = +m.hs, as = +m.as;
-    h.GF += hs; h.GA += as; a.GF += as; a.GA += hs;
-    h.played++; a.played++;
-    if (hs > as) { h.W++; h.P += +ptWin; a.L++; a.P += +ptLose; }
-    else if (hs < as) { a.W++; a.P += +ptWin; h.L++; h.P += +ptLose; }
-    else { h.D++; h.P += +ptDraw; a.D++; a.P += +ptDraw; }
+    h.GF+=hs; h.GA+=as; a.GF+=as; a.GA+=hs; h.played++; a.played++;
+    if (hs > as)      { h.W++; h.P+=+ptWin;  a.L++; a.P+=+ptLose; }
+    else if (hs < as) { a.W++; a.P+=+ptWin;  h.L++; h.P+=+ptLose; }
+    else              { h.D++; h.P+=+ptDraw; a.D++; a.P+=+ptDraw; }
   });
-  return Object.values(map).sort((a, b) =>
-    b.P - a.P || (b.GF - b.GA) - (a.GF - a.GA) || b.GF - a.GF
-  );
+  return Object.values(map).sort((a,b) => b.P-a.P || (b.GF-b.GA)-(a.GF-a.GA) || b.GF-a.GF);
 }
 
-function renderStandings() {
-  const el = document.getElementById('standingsTable');
-  if (!STATE.teams.length) { el.innerHTML = '<div style="color:var(--text2);text-align:center;padding:32px">尚無資料</div>'; return; }
-  const rows = calcStandings();
-  const rankIcon = ['🥇','🥈','🥉'];
-  const rankCls = ['rank-1','rank-2','rank-3'];
-  let html = `<table class="standings-table">
-    <thead><tr>
-      <th>名次</th><th style="text-align:left;padding-left:16px">隊伍</th>
-      <th>賽</th><th>勝</th><th>平</th><th>負</th>
-      <th>進/失球</th><th>得失差</th><th>積分</th>
-    </tr></thead><tbody>`;
-  rows.forEach((r, i) => {
+function renderStand() {
+  const el = document.getElementById('standEl');
+  if (!STATE.teams.length) { el.innerHTML = '<div class="empty">尚無資料</div>'; return; }
+  const rows = calcStand();
+  const ri = ['🥇','🥈','🥉'], rc = ['r1','r2','r3'];
+  let html = `<table class="stt"><thead><tr>
+    <th>名次</th><th style="text-align:left;padding-left:12px">隊伍</th>
+    <th>賽</th><th>勝</th><th>平</th><th>負</th><th>進/失</th><th>差</th><th>積分</th>
+  </tr></thead><tbody>`;
+  rows.forEach((r,i) => {
     const diff = r.GF - r.GA;
     html += `<tr>
-      <td class="rank-cell ${rankCls[i] || ''}">
-        ${i < 3 ? rankIcon[i] : i + 1}
-      </td>
-      <td class="team-cell">
-        <span class="seed-tag" style="background:${BALL_COLORS[(r.seed - 1) % BALL_COLORS.length]}">${r.seed || '?'}</span>
-        ${escHtml(r.name)}
+      <td class="rc ${rc[i]||''}">${i<3?ri[i]:i+1}</td>
+      <td class="tc">
+        <span class="sdot2" style="background:${BPAL[(r.seed-1)%BPAL.length]}">${r.seed||'?'}</span>${esc(r.name)}
       </td>
       <td>${r.played}</td>
       <td style="color:#4ade80">${r.W}</td>
-      <td style="color:var(--text2)">${r.D}</td>
+      <td style="color:var(--t2)">${r.D}</td>
       <td style="color:#f87171">${r.L}</td>
-      <td>${r.GF} / ${r.GA}</td>
-      <td style="color:${diff >= 0 ? '#4ade80' : '#f87171'}">${diff > 0 ? '+' : ''}${diff}</td>
-      <td class="pts-cell">${r.P}</td>
+      <td>${r.GF}/${r.GA}</td>
+      <td style="color:${diff>=0?'#4ade80':'#f87171'}">${diff>0?'+':''}${diff}</td>
+      <td class="pts">${r.P}</td>
     </tr>`;
   });
-  html += '</tbody></table>';
-  el.innerHTML = html;
+  el.innerHTML = html + '</tbody></table>';
+}
+
+// ═══════════════════════════════════════════
+// HISTORY
+// ═══════════════════════════════════════════
+async function loadHist() {
+  document.getElementById('histEl').innerHTML = '<div class="empty"><span class="spin"></span> 載入中...</div>';
+  try {
+    const d = await gas('getHistory', { eid: CUR_EID });
+    HIST_CACHE = d.logs || [];
+    if (!d.ok || !HIST_CACHE.length) {
+      document.getElementById('histEl').innerHTML = '<div class="empty">尚無紀錄</div>';
+      return;
+    }
+    const typeMap = { score:'la-score', draw:'la-draw', create:'la-create',
+      reset:'la-reset', auth:'la-auth', changePassword:'la-auth',
+      deleteEvent:'la-delete' };
+    const labelMap = { score:'成績記錄', draw:'抽籤', create:'建立賽事',
+      reset:'重置', auth:'管理者登入', changePassword:'修改密碼', deleteEvent:'刪除賽事' };
+    let html = `<table class="ht"><thead><tr>
+      <th>時間</th><th>動作</th><th>賽事</th><th>說明</th>
+    </tr></thead><tbody>`;
+    [...HIST_CACHE].reverse().forEach(l => {
+      const cls = typeMap[l.action] || 'la-auth';
+      const lbl = labelMap[l.action] || l.action;
+      html += `<tr>
+        <td style="color:var(--t3);white-space:nowrap;font-size:.75rem">${l.ts||''}</td>
+        <td><span class="la ${cls}">${lbl}</span></td>
+        <td style="color:var(--t2);font-size:.8rem">${esc(l.eventName||'—')}</td>
+        <td style="font-size:.8rem">${esc(l.detail||'')}</td>
+      </tr>`;
+    });
+    document.getElementById('histEl').innerHTML = html + '</tbody></table>';
+  } catch(e) {
+    document.getElementById('histEl').innerHTML = '<div class="empty">連接失敗</div>';
+  }
 }
 
 // ═══════════════════════════════════════════
 // EXPORT
 // ═══════════════════════════════════════════
-function exportCSV(type) {
-  let rows = [];
+function xcsv(type) {
   const BOM = '\uFEFF';
+  const tm  = Object.fromEntries(STATE.teams.map(t => [t.id, t]));
+  let rows  = [];
+
   if (type === 'schedule') {
-    const teamMap = Object.fromEntries(STATE.teams.map(t => [t.id, t]));
-    rows.push(['場次', '輪別', '主隊', '客隊', '主隊得分', '客隊得分', '狀態']);
-    STATE.matches.forEach(m => {
-      const h = teamMap[m.home], a = teamMap[m.away];
-      rows.push([m.id, m.r, h?.name || '', a?.name || '', m.hs, m.as, m.done ? '已完賽' : '待賽']);
-    });
-  } else {
-    const data = calcStandings();
-    rows.push(['名次', '抽籤號', '隊伍', '賽', '勝', '平', '負', '進球', '失球', '得失差', '積分']);
-    data.forEach((r, i) => rows.push([i + 1, r.seed, r.name, r.played, r.W, r.D, r.L, r.GF, r.GA, r.GF - r.GA, r.P]));
+    rows = [['場次','輪別','主隊','客隊','主隊分','客隊分','狀態']];
+    STATE.matches.forEach(m => rows.push([
+      m.id, m.r, tm[m.home]?.name||'', tm[m.away]?.name||'', m.hs, m.as, m.done?'完賽':'待賽'
+    ]));
+  } else if (type === 'standings') {
+    rows = [['名次','抽籤號','隊伍','賽','勝','平','負','進球','失球','積分']];
+    calcStand().forEach((r,i) => rows.push([i+1,r.seed,r.name,r.played,r.W,r.D,r.L,r.GF,r.GA,r.P]));
+  } else if (type === 'history') {
+    if (!HIST_CACHE.length) return alert('請先切換到「歷史」頁面載入後再匯出');
+    rows = [['時間','動作','賽事','說明']];
+    [...HIST_CACHE].reverse().forEach(l => rows.push([l.ts, l.action, l.eventName, l.detail]));
+  } else if (type === 'all') {
+    rows = [['=== 賽事資訊 ===']];
+    rows.push(['賽事名稱', STATE.event.name]);
+    rows.push(['積分制（勝/平/負）', `${STATE.event.ptWin}/${STATE.event.ptDraw}/${STATE.event.ptLose}`]);
+    rows.push(['備註', STATE.event.note||'']);
+    rows.push([]);
+    rows.push(['=== 賽程 ==='],['場次','輪別','主隊','客隊','主隊分','客隊分','狀態']);
+    STATE.matches.forEach(m => rows.push([
+      m.id, m.r, tm[m.home]?.name||'', tm[m.away]?.name||'', m.hs, m.as, m.done?'完賽':'待賽'
+    ]));
+    rows.push([]);
+    rows.push(['=== 積分榜 ==='],['名次','抽籤號','隊伍','賽','勝','平','負','進球','失球','積分']);
+    calcStand().forEach((r,i) => rows.push([i+1,r.seed,r.name,r.played,r.W,r.D,r.L,r.GF,r.GA,r.P]));
+    if (HIST_CACHE.length) {
+      rows.push([]);
+      rows.push(['=== 歷史紀錄 ==='],['時間','動作','賽事','說明']);
+      [...HIST_CACHE].reverse().forEach(l => rows.push([l.ts,l.action,l.eventName,l.detail]));
+    }
   }
-  const csv = BOM + rows.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n');
+
+  const csv = BOM + rows.map(r =>
+    r.map(c => `"${String(c??'').replace(/"/g,'""')}"`).join(',')
+  ).join('\n');
   const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
-  a.download = (type === 'schedule' ? '賽程表' : '積分榜') + '_' + (STATE.event.name || 'export') + '.csv';
+  a.href = URL.createObjectURL(new Blob([csv], { type:'text/csv;charset=utf-8' }));
+  a.download = `${STATE.event.name||'循環賽'}_${type}_${dateStr()}.csv`;
   a.click();
 }
 
-function printSchedule() {
-  const teamMap = Object.fromEntries(STATE.teams.map(t => [t.id, t]));
-  const byRound = {};
-  STATE.matches.forEach(m => { (byRound[m.r] = byRound[m.r] || []).push(m); });
-  let body = `<h2>${STATE.event.name || '循環賽賽程表'}</h2>`;
-  Object.entries(byRound).forEach(([r, ms]) => {
-    body += `<h3>第 ${r} 輪</h3><table border="1" cellpadding="6" style="border-collapse:collapse;width:100%">
-      <tr><th>場次</th><th>主隊</th><th>比分</th><th>客隊</th></tr>`;
+function printSched() {
+  const tm = Object.fromEntries(STATE.teams.map(t => [t.id,t]));
+  const byR = {};
+  STATE.matches.forEach(m => { (byR[m.r]=byR[m.r]||[]).push(m); });
+  let body = `<h2>${esc(STATE.event.name)||'循環賽賽程表'}</h2>`;
+  Object.entries(byR).forEach(([r,ms]) => {
+    body += `<h3>第 ${r} 輪</h3>
+      <table border="1" cellpadding="6" style="border-collapse:collapse;width:100%;font-size:13px">
+      <tr style="background:#eee"><th>場次</th><th>主隊</th><th>比分</th><th>客隊</th></tr>`;
     ms.forEach(m => {
-      body += `<tr><td>#${m.id}</td><td>${teamMap[m.home]?.name || ''}</td>
-        <td style="text-align:center">${m.done ? m.hs + ':' + m.as : '　:　'}</td>
-        <td>${teamMap[m.away]?.name || ''}</td></tr>`;
+      body += `<tr><td>#${m.id}</td><td>${tm[m.home]?.name||''}</td>
+        <td style="text-align:center">${m.done?m.hs+':'+m.as:'___:___'}</td>
+        <td>${tm[m.away]?.name||''}</td></tr>`;
     });
     body += '</table><br>';
   });
-  printPage(body);
+  popPrint(body);
 }
 
-function printStandings() {
-  const rows = calcStandings();
-  let body = `<h2>${STATE.event.name || '循環賽積分榜'}</h2>
-    <table border="1" cellpadding="6" style="border-collapse:collapse;width:100%">
-    <tr><th>名次</th><th>抽籤號</th><th>隊伍</th><th>賽</th><th>勝</th><th>平</th><th>負</th><th>進球</th><th>失球</th><th>積分</th></tr>`;
-  rows.forEach((r, i) => {
-    body += `<tr><td>${i + 1}</td><td>${r.seed}</td><td>${r.name}</td><td>${r.played}</td>
-      <td>${r.W}</td><td>${r.D}</td><td>${r.L}</td><td>${r.GF}</td><td>${r.GA}</td><td><b>${r.P}</b></td></tr>`;
+function printStand() {
+  const rows = calcStand();
+  let body = `<h2>${esc(STATE.event.name)||'循環賽積分榜'}</h2>
+    <table border="1" cellpadding="6" style="border-collapse:collapse;width:100%;font-size:13px">
+    <tr style="background:#eee"><th>名次</th><th>抽籤號</th><th>隊伍</th>
+    <th>賽</th><th>勝</th><th>平</th><th>負</th><th>進</th><th>失</th><th>差</th><th>積分</th></tr>`;
+  rows.forEach((r,i) => {
+    const d = r.GF-r.GA;
+    body += `<tr><td>${i+1}</td><td>${r.seed}</td><td><b>${esc(r.name)}</b></td>
+      <td>${r.played}</td><td>${r.W}</td><td>${r.D}</td><td>${r.L}</td>
+      <td>${r.GF}</td><td>${r.GA}</td><td>${d>0?'+':''}${d}</td><td><b>${r.P}</b></td></tr>`;
   });
-  body += '</table>';
-  printPage(body);
+  popPrint(body + '</table>');
 }
 
-function printPage(body) {
-  const w = window.open('', '', 'width=900,height=700');
+function popPrint(body) {
+  const w = window.open('','','width=960,height=720');
   w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">
-    <style>body{font-family:sans-serif;padding:24px}h2{margin-bottom:16px}h3{margin:16px 0 8px}
-    table{font-size:14px}th{background:#eee}</style></head>
+    <style>body{font-family:sans-serif;padding:24px}h2{margin-bottom:14px}h3{margin:14px 0 6px}</style></head>
     <body>${body}<script>window.print();<\/script></body></html>`);
   w.document.close();
 }
 
 function openSheet() {
-  if (STATE.sheetUrl) window.open(STATE.sheetUrl, '_blank');
-  else alert('尚未取得試算表連結，請確認 GAS 已正確設定。');
+  if (STATE.sheetUrl) window.open(STATE.sheetUrl,'_blank');
+  else alert('尚未取得試算表連結');
 }
 
 // ═══════════════════════════════════════════
 // ADMIN
 // ═══════════════════════════════════════════
 function toggleAdmin() {
-  if (ADMIN_MODE) {
-    ADMIN_MODE = false;
-    document.getElementById('adminToggle').classList.remove('active');
-    document.getElementById('adminToggle').textContent = '🔐 管理者登入';
-    document.getElementById('adminDataCard').style.display = 'none';
-    renderTeams(); renderSchedule();
+  if (ADMIN) {
+    ADMIN = false;
+    const btn = document.getElementById('adminBtn');
+    btn.textContent = '🔐 管理者';
+    btn.classList.remove('on');
+    document.getElementById('adminCard').style.display = 'none';
+    renderTeams(); renderSched();
   } else {
-    document.getElementById('adminPwInput').value = '';
-    document.getElementById('adminMsg').innerHTML = '';
-    document.getElementById('adminModal').classList.add('show');
+    $('adminPw').value = '';
+    msg('adminMsg','','');
+    open_('adminMod');
   }
 }
 
 async function checkAdmin() {
-  const pw = document.getElementById('adminPwInput').value;
-  showMsg('adminMsg', '<span class="spinner"></span>驗證中...', 'success');
+  const pw = $('adminPw').value;
+  msg('adminMsg','<span class="spin"></span> 驗證中...','inf');
   try {
-    const d = await gasCall('auth', { password: pw });
+    const d = await gas('auth', { password: pw });
     if (d.ok) {
-      ADMIN_MODE = true;
-      closeModal('adminModal');
-      document.getElementById('adminToggle').classList.add('active');
-      document.getElementById('adminToggle').textContent = '🔓 管理者模式';
-      document.getElementById('adminDataCard').style.display = 'block';
-      renderTeams(); renderSchedule();
-    } else {
-      showMsg('adminMsg', '密碼錯誤', 'error');
-    }
-  } catch {
-    showMsg('adminMsg', '驗證失敗', 'error');
-  }
+      ADMIN = true;
+      close_('adminMod');
+      const btn = document.getElementById('adminBtn');
+      btn.textContent = '🔓 管理者';
+      btn.classList.add('on');
+      document.getElementById('adminCard').style.display = 'block';
+      renderTeams(); renderSched();
+      await gas('log', { eid:CUR_EID, action:'auth', detail:'管理者登入' });
+    } else msg('adminMsg','密碼錯誤','err');
+  } catch { msg('adminMsg','驗證失敗','err'); }
 }
 
-async function resetAll() {
-  if (!confirm('確定要清除所有資料嗎？此動作無法復原！')) return;
-  STATE = { event: { name: '', ptWin: 3, ptDraw: 1, ptLose: 0, note: '' }, teams: [], matches: [], sheetUrl: STATE.sheetUrl };
-  await saveToGAS();
-  applyStateToUI();
-  alert('已清除所有資料。');
+function needAdmin() { alert('請先點右上角「🔐 管理者」登入'); }
+
+function openChgPw() {
+  $('np1').value=''; $('np2').value='';
+  msg('cpMsg','','');
+  open_('chgPwMod');
 }
 
-function changePassword() {
-  document.getElementById('newPw1').value = '';
-  document.getElementById('newPw2').value = '';
-  document.getElementById('changePwMsg').innerHTML = '';
-  document.getElementById('changePwModal').classList.add('show');
+async function doChgPw() {
+  const p1=$('np1').value, p2=$('np2').value;
+  if (!p1) return msg('cpMsg','密碼不可為空','err');
+  if (p1!==p2) return msg('cpMsg','兩次不一致','err');
+  msg('cpMsg','<span class="spin"></span>','inf');
+  const d = await gas('changePassword', { password:p1 });
+  if (d.ok) { msg('cpMsg','✅ 已更新','ok'); setTimeout(()=>close_('chgPwMod'),1200); }
+  else msg('cpMsg','失敗：'+d.msg,'err');
 }
 
-async function submitChangePw() {
-  const p1 = document.getElementById('newPw1').value;
-  const p2 = document.getElementById('newPw2').value;
-  if (!p1) return showMsg('changePwMsg', '密碼不可為空', 'error');
-  if (p1 !== p2) return showMsg('changePwMsg', '兩次密碼不一致', 'error');
-  showMsg('changePwMsg', '<span class="spinner"></span>更新中...', 'success');
-  const d = await gasCall('changePassword', { password: p1 });
+async function doReset() {
+  if (!ADMIN) return needAdmin();
+  if (!CUR_EID) return alert('請先選擇賽事');
+  if (!confirm(`確定重置「${STATE.event.name}」的賽程與成績？隊伍資料保留，此動作無法復原。`)) return;
+  STATE.matches = [];
+  STATE.teams.forEach(t => t.seed = 0);
+  const d = await gas('saveEvent', { eid:CUR_EID,
+    state:{ event:STATE.event, teams:STATE.teams, matches:[] },
+    logAction:'reset', logDetail:`重置：${STATE.event.name}` });
+  if (d.ok) { alert('已重置。'); applyUI(); await loadAll(); }
+}
+
+async function doDelete() {
+  if (!ADMIN) return needAdmin();
+  if (!CUR_EID) return alert('請先選擇賽事');
+  if (!confirm(`確定永久刪除「${STATE.event.name}」？此動作無法復原！`)) return;
+  const d = await gas('deleteEvent', { eid:CUR_EID });
   if (d.ok) {
-    showMsg('changePwMsg', '密碼已更新', 'success');
-    setTimeout(() => closeModal('changePwModal'), 1200);
-  } else {
-    showMsg('changePwMsg', '更新失敗：' + d.msg, 'error');
-  }
+    CUR_EID = ''; localStorage.removeItem('rr_eid');
+    STATE = { event:{name:'',ptWin:3,ptDraw:1,ptLose:0,note:''}, teams:[], matches:[], sheetUrl:STATE.sheetUrl };
+    applyUI(); await loadAll();
+    showTab(document.querySelector('[data-tab="events"]'), 'events');
+  } else alert('刪除失敗：'+d.msg);
+}
+
+// ═══════════════════════════════════════════
+// TABS
+// ═══════════════════════════════════════════
+function showTab(btn, tab) {
+  document.querySelectorAll('.tb').forEach(b => b.classList.remove('on'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('tab-'+tab).classList.add('on');
+  if (tab==='draw')      renderDrawPrev();
+  if (tab==='schedule')  renderSched();
+  if (tab==='standings') renderStand();
+  if (tab==='history')   loadHist();
+  if (tab==='events')    renderEvList();
 }
 
 // ═══════════════════════════════════════════
 // UTILS
 // ═══════════════════════════════════════════
-function closeModal(id) { document.getElementById(id).classList.remove('show'); }
-function escHtml(s) { return String(s || '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
-function showMsg(id, html, type) {
-  const el = document.getElementById(id);
-  el.innerHTML = `<div class="msg ${type}">${html}</div>`;
+function $(id)      { return document.getElementById(id); }
+function v(id)      { return $(id)?.value||''; }
+function open_(id)  { $(id).classList.add('show'); }
+function close_(id) { $(id).classList.remove('show'); }
+function msg(id, html, type) {
+  const el = $(id); if(!el) return;
+  el.innerHTML = html ? `<div class="al ${type}">${html}</div>` : '';
 }
-function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+function esc(s) {
+  return String(s||'').replace(/[&<>"']/g, m =>
+    ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+function uid()      { return Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
+function delay(ms)  { return new Promise(r=>setTimeout(r,ms)); }
+function shuffle(a) {
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+function dateStr()  { return new Date().toISOString().slice(0,10); }
 </script>
 </body>
 </html>
